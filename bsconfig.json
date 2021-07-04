@@ -12,7 +12,7 @@
   "suffix": ".bs.js",
   "bs-dependencies": ["bs-prom", "bs-express", "@glennsl/bs-json"],
   "warnings": {
+    "number": "-109",
     "error": "+101"
-  },
-  "refmt": 3
+  }
 }
