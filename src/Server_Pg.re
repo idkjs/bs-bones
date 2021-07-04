@@ -26,13 +26,13 @@ module Pool = {
 module Client = {
   type t;
 
-  [@bs.send] external connect: pool => Js.Promise.t(t) = "";
+  [@bs.send] external connect: pool => Js.Promise.t(t) = "connect";
 
   [@bs.send]
   external _query: (t, queryPayload) => Js.Promise.t(dbResult) = "query";
   let query = (client, payload) => _query(client, payload);
 
-  [@bs.send] external release: t => unit = "";
+  [@bs.send] external release: t => unit = "release";
 };
 
 module Events = {
@@ -66,9 +66,9 @@ module Events = {
 module DbTypes = {
   type t;
 
-  [@bs.val] external parseInt: string => int = "";
-  [@bs.module "pg"] external types: t = "";
-  [@bs.send] external setTypeParser: (t, int, string => 'a) => unit = "";
+  [@bs.val] external parseInt: string => int = "parseInt";
+  [@bs.module "pg"] external types: t = "types";
+  [@bs.send] external setTypeParser: (t, int, string => 'a) => unit = "setTypeParser";
   [@bs.send]
   external setTypeParserD: (t, int, Js.Date.t => 'a) => unit = "setTypeParser";
 

@@ -6,9 +6,8 @@ module Types = {
   type builder;
   type insertBuilder;
   type fragment = {
-    .
-    "str": string,
-    "vals": Server_Pg.values,
+    str: string,
+    vals: Server_Pg.values,
   };
   type onConflictBuilder;
 };
@@ -17,7 +16,7 @@ include Types;
 module Utils = {
   /* Remove any undefined values from an object that we are about to set */
   [@bs.module "lodash"]
-  external omitBy: (Js.t('a), 'b => bool) => Js.t('c) = "";
+  external omitBy: (Js.t('a), 'b => bool) => Js.t('c) = "omitBy";
   [@bs.module "lodash"]
   external omitByJson: (Js.Json.t, 'b => bool) => Js.Json.t = "omitBy";
 };
@@ -52,28 +51,28 @@ module Where = {
   external and_: array(whereExpr) => whereExpr = "and";
   [@bs.module "sql-bricks-postgres"]
   external or_: array(whereExpr) => whereExpr = "or";
-  [@bs.module "sql-bricks-postgres"] external not: whereExpr => whereExpr = "";
+  [@bs.module "sql-bricks-postgres"] external not: whereExpr => whereExpr = "not";
   [@bs.module "sql-bricks-postgres"]
-  external eq: (~col: string, 'a) => whereExpr = "";
+  external eq: (~col: string, 'a) => whereExpr = "eq";
   [@bs.module "sql-bricks-postgres"]
-  external notEq: (~col: string, 'a) => whereExpr = "";
+  external notEq: (~col: string, 'a) => whereExpr = "notEq";
   [@bs.module "sql-bricks-postgres"]
-  external lt: (~col: string, 'a) => whereExpr = "";
+  external lt: (~col: string, 'a) => whereExpr = "lt";
   [@bs.module "sql-bricks-postgres"]
-  external lte: (~col: string, 'a) => whereExpr = "";
+  external lte: (~col: string, 'a) => whereExpr = "lte";
   [@bs.module "sql-bricks-postgres"]
-  external gt: (~col: string, 'a) => whereExpr = "";
+  external gt: (~col: string, 'a) => whereExpr = "gt";
   [@bs.module "sql-bricks-postgres"]
-  external gte: (~col: string, 'a) => whereExpr = "";
+  external gte: (~col: string, 'a) => whereExpr = "gte";
   [@bs.module "sql-bricks-postgres"]
-  external between: (~col: string, ~bottom: 'a, ~top: 'a) => whereExpr = "";
-  [@bs.module "sql-bricks-postgres"] external isNull: string => whereExpr = "";
+  external between: (~col: string, ~bottom: 'a, ~top: 'a) => whereExpr = "between";
+  [@bs.module "sql-bricks-postgres"] external isNull: string => whereExpr = "isNull";
   [@bs.module "sql-bricks-postgres"]
-  external isNotNull: string => whereExpr = "";
+  external isNotNull: string => whereExpr = "isNotNull";
   [@bs.module "sql-bricks-postgres"]
-  external like: (~col: string, string) => whereExpr = "";
+  external like: (~col: string, string) => whereExpr = "like";
   [@bs.module "sql-bricks-postgres"]
-  external exists: (~subquery: builder) => whereExpr = "";
+  external exists: (~subquery: builder) => whereExpr = "exists";
   [@bs.module "sql-bricks-postgres"]
   external in_: (~col: string, array('a)) => whereExpr = "in";
   [@bs.module "sql-bricks-postgres"]
@@ -83,9 +82,9 @@ include Where;
 
 module Insert = {
   [@bs.module "sql-bricks-postgres"]
-  external insertInto: string => insertBuilder = "";
-  [@bs.send] external into: (builder, string) => builder = "";
-  [@bs.send] external intoTemp: (builder, string) => builder = "";
+  external insertInto: string => insertBuilder = "insertInto";
+  [@bs.send] external into: (builder, string) => builder = "into";
+  [@bs.send] external intoTemp: (builder, string) => builder = "intoTemp";
   [@bs.send]
   external values: (insertBuilder, array(Js.t('a))) => builder = "values";
   [@bs.send]
@@ -109,40 +108,40 @@ module Update = {
      the key is left alone in the database. On the other hand, if the value is "null", then the value should
      be set to null in the database. */
   [@bs.module "sql-bricks-postgres"]
-  external update: (~table: string, Js.t('a)) => builder = "";
+  external update: (~table: string, Js.t('a)) => builder = "update";
   let update = (~table, obj) =>
     update(~table, Utils.omitBy(obj, Js.Undefined.testAny));
   [@bs.module "sql-bricks-postgres"]
-  external updateTableOnly: string => builder = "";
+  external updateTableOnly: string => builder = "updateTableOnly";
   [@bs.module "sql-bricks-postgres"]
   external updateJson: (~table: string, Js.Json.t) => builder = "update";
   let updateJson = (~table, json) =>
     updateJson(~table, Utils.omitByJson(json, Js.Undefined.testAny));
-  [@bs.send] external set: (builder, ~column: string, 'a) => builder = "";
+  [@bs.send] external set: (builder, ~column: string, 'a) => builder = "set";
 };
 include Update;
 
 module Delete = {
-  [@bs.module "sql-bricks-postgres"] external delete: unit => builder = "";
+  [@bs.module "sql-bricks-postgres"] external delete: unit => builder = "delete";
 };
 include Delete;
 
 module Select = {
-  [@bs.module "sql-bricks-postgres"] external select: string => builder = "";
-  [@bs.send] external from: (builder, string) => builder = "";
-  [@bs.send] external forUpdate: (builder, unit) => builder = "";
+  [@bs.module "sql-bricks-postgres"] external select: string => builder = "select";
+  [@bs.send] external from: (builder, string) => builder = "from";
+  [@bs.send] external forUpdate: (builder, unit) => builder = "forUpdate";
 };
 include Select;
 
 module Filters = {
   [@bs.send]
-  external distinct: (builder, ~cols: array(string)) => builder = "";
-  [@bs.send] external having: (builder, ~column: string, 'a) => builder = "";
-  [@bs.send] external limit: (builder, int) => builder = "";
-  [@bs.send] external offset: (builder, int) => builder = "";
+  external distinct: (builder, ~cols: array(string)) => builder = "distinct";
+  [@bs.send] external having: (builder, ~column: string, 'a) => builder = "having";
+  [@bs.send] external limit: (builder, int) => builder = "limit";
+  [@bs.send] external offset: (builder, int) => builder = "offset";
   [@bs.send] external whereEq: (builder, string, string) => builder = "where";
   [@bs.send] external whereAll: (builder, Js.t('a)) => builder = "where";
-  [@bs.send] external where: (builder, whereExpr) => builder = "";
+  [@bs.send] external where: (builder, whereExpr) => builder = "where";
   let whereOpt = (builder: builder, optExpr: option(whereExpr)): builder => {
     switch (optExpr) {
     | None => builder
@@ -154,17 +153,17 @@ include Filters;
 
 module Transformers = {
   [@bs.send] external andSelect: (builder, string) => builder = "select";
-  [@bs.send] external join: (builder, string) => builder = "";
-  [@bs.send] external leftJoin: (builder, string) => builder = "";
-  [@bs.send] external rightJoin: (builder, string) => builder = "";
-  [@bs.send] external fullJoin: (builder, string) => builder = "";
-  [@bs.send] external crossJoin: (builder, string) => builder = "";
-  [@bs.send] external on: (builder, Js.t('a)) => builder = "";
+  [@bs.send] external join: (builder, string) => builder = "join";
+  [@bs.send] external leftJoin: (builder, string) => builder = "leftJoin";
+  [@bs.send] external rightJoin: (builder, string) => builder = "rightJoin";
+  [@bs.send] external fullJoin: (builder, string) => builder = "fullJoin";
+  [@bs.send] external crossJoin: (builder, string) => builder = "crossJoin";
+  [@bs.send] external on: (builder, Js.t('a)) => builder = "on";
   [@bs.send] external groupByOne: (builder, string) => builder = "groupBy";
-  [@bs.send] external groupBy: (builder, array(string)) => builder = "";
+  [@bs.send] external groupBy: (builder, array(string)) => builder = "groupBy";
   [@bs.send] external orderByOne: (builder, string) => builder = "orderBy";
-  [@bs.send] external orderBy: (builder, array(string)) => builder = "";
-  [@bs.send] external returning: (builder, string) => builder = "";
+  [@bs.send] external orderBy: (builder, array(string)) => builder = "orderBy";
+  [@bs.send] external returning: (builder, string) => builder = "returning";
 };
 include Transformers;
 
@@ -172,9 +171,9 @@ module OnConflict = {
   [@bs.send]
   external onConflict2: (builder, string, string) => onConflictBuilder =
     "onConflict";
-  [@bs.send] external onConflict: (builder, string) => onConflictBuilder = "";
-  [@bs.send] external doUpdate: onConflictBuilder => builder = "";
-  [@bs.send] external doNothing: onConflictBuilder => builder = "";
+  [@bs.send] external onConflict: (builder, string) => onConflictBuilder = "onConflict";
+  [@bs.send] external doUpdate: onConflictBuilder => builder = "doUpdate";
+  [@bs.send] external doNothing: onConflictBuilder => builder = "doNothing";
   [@bs.send]
   external doUpdateOne: (onConflictBuilder, string) => builder = "doUpdate";
 };
@@ -183,6 +182,6 @@ include OnConflict;
 module To = {
   [@bs.send]
   external toPayload: builder => Server_Pg.queryPayload = "toParams";
-  [@bs.send] external toString: builder => string = "";
+  [@bs.send] external toString: builder => string = "toString";
 };
 include To;
